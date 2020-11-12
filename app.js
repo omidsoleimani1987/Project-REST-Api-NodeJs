@@ -27,4 +27,5 @@ app.use((req, res, next) => {
 // ** forward any incoming requests that starts with ( /feed ) to the ( feeRoutes ) to handle them
 app.use('/feed', feedRoutes);
 
-app.listen(8080);
+const port = process.env.PORT || 8080;
+app.listen(port);
