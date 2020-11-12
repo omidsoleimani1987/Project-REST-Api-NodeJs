@@ -1,0 +1,24 @@
+{
+  "name": "rest-api-node-js",
+  "version": "1.0.0",
+  "description": "a rest full api with node js, docker and react",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omidsoleimani1987/Project-REST-Api-NodeJs.git"
+  },
+  "author": "omid soleimani",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/omidsoleimani1987/Project-REST-Api-NodeJs/issues"
+  },
+  "homepage": "https://github.com/omidsoleimani1987/Project-REST-Api-NodeJs#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  }
+}
