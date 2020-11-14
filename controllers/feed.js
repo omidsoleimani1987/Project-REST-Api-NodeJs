@@ -68,3 +68,31 @@ exports.createPost = (req, res, next) => {
       next(err);
     });
 };
+
+// get single post
+exports.getSinglePost = (req, res, next) => {
+  const postId = req.params.postId;
+  Post.findById(postId)
+    .then(post => {
+      // check if there is such a post in DB
+      if (!post) {
+        // adding express error handling
+        const message = 'Could not find post.';
+        const error = new Error(message);
+        error.statusCode = 404;
+        throw error;
+      }
+
+      // when there is a post with given postId
+      res.status(200).json({
+        message: 'Post fetched',
+        post
+      });
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
