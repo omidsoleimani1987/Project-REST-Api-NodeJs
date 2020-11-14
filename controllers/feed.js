@@ -4,7 +4,18 @@ exports.getPosts = (req, res, next) => {
   // json is provided by express to return json data
   // passing normal object to the json and it convert it automatically
   res.status(200).json({
-    posts: [{ title: 'First Post', content: 'This is the first post content' }]
+    posts: [
+      {
+        _id: '1',
+        title: 'First Post',
+        content: 'This is the first post content',
+        imageUrl: 'images/bootstrap.jpg',
+        creator: {
+          name: 'omid'
+        },
+        createdAt: new Date()
+      }
+    ]
   });
 };
 

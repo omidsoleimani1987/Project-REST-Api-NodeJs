@@ -16,15 +16,14 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
     'Access-Control-Allow-Methods',
-    'GET, POST, PUT, PATCH, DELETE'
+    'OPTIONS, GET, POST, PUT, PATCH, DELETE'
   );
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
 
 // middleware -- routes
-
-// ** forward any incoming requests that starts with ( /feed ) to the ( feeRoutes ) to handle them
+// * forward any incoming requests that starts with ( /feed ) to the ( feeRoutes ) to handle them
 app.use('/feed', feedRoutes);
 
 const port = process.env.PORT || 8080;
