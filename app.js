@@ -1,3 +1,5 @@
+const path = require('path');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -7,9 +9,12 @@ const feedRoutes = require('./routes/feed');
 
 const app = express();
 
-// middleware -- req body
+// middleware -- request body parser
 // app.use(bodyParser.urlencoded()); --> for data type: x-www-form-urlencoded
 app.use(bodyParser.json()); // for data type: application/json
+
+// serving the images statically
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // middleware -- headers
 app.use((req, res, next) => {
