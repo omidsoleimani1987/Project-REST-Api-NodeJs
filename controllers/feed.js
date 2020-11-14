@@ -30,10 +30,11 @@ exports.createPost = (req, res, next) => {
   // adding validator to incoming requests
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      message: 'validation failed,. entered data is incorrect.',
-      errors: errors.array()
-    });
+    // adding express error handling
+    const message = 'validation failed. entered data is incorrect.';
+    const error = new Error(message);
+    error.statusCode = 422;
+    throw error;
   }
 
   const title = req.body.title;
@@ -61,6 +62,9 @@ exports.createPost = (req, res, next) => {
       });
     })
     .catch(err => {
-      console.log(err);
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     });
 };

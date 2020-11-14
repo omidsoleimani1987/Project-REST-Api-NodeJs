@@ -32,6 +32,14 @@ app.use((req, res, next) => {
 // * forward any incoming requests that starts with ( /feed ) to the ( feeRoutes ) to handle them
 app.use('/feed', feedRoutes);
 
+// error handling middleware
+app.use((error, req, res, next) => {
+  console.log(error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  res.status(status).json({ message });
+});
+
 // port
 const port = process.env.PORT || 8080;
 
