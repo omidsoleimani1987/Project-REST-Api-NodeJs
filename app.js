@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 // routes
 const feedRoutes = require('./routes/feed');
@@ -26,5 +27,17 @@ app.use((req, res, next) => {
 // * forward any incoming requests that starts with ( /feed ) to the ( feeRoutes ) to handle them
 app.use('/feed', feedRoutes);
 
+// port
 const port = process.env.PORT || 8080;
-app.listen(port);
+
+// connecting to DB
+mongoose
+  .connect(
+    'mongodb+srv://omidsoleimani:Registered1366@cluster0.4eqhs.mongodb.net/NodeJs-Api?retryWrites=true&w=majority'
+  )
+  .then((result) => {
+    app.listen(port);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
