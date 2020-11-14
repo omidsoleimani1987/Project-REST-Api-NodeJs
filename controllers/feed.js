@@ -35,17 +35,29 @@ exports.createPost = (req, res, next) => {
     throw error;
   }
 
+  // !
+  console.log(req.file);
+
+  // check is the file is set
+  if (!req.file) {
+    const message = 'No image provided!';
+    const error = new Error(message);
+    error.statusCode = 422;
+    throw error;
+  }
+
   const title = req.body.title;
   const content = req.body.content;
+  const imageUrl = req.file.path.replace('\\', '/');
 
   // create a post with Post model as a constructor
   const post = new Post({
     // mongoose create the id and timestamps for us
     title,
     content,
-    imageUrl: 'images/bootstrap.jpg',
+    imageUrl,
     creator: {
-      name: 'omid'
+      name: 'Omid'
     }
   });
 
