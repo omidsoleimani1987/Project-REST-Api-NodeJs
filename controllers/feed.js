@@ -1,6 +1,9 @@
 // validator
 const { validationResult } = require('express-validator');
 
+// import Post model
+const Post = require('../models/post');
+
 // send all posts
 exports.getPosts = (req, res, next) => {
   // return a json response
@@ -24,8 +27,6 @@ exports.getPosts = (req, res, next) => {
 
 // create a post
 exports.createPost = (req, res, next) => {
-  // create the post in db later
-
   // adding validator to incoming requests
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -38,16 +39,28 @@ exports.createPost = (req, res, next) => {
   const title = req.body.title;
   const content = req.body.content;
 
-  res.status(201).json({
-    message: 'Post created successfully',
-    post: {
-      _id: new Date().toISOString(),
-      title,
-      content,
-      creator: {
-        name: 'omid'
-      },
-      createdAt: new Date()
+  // create a post with Post model as a constructor
+  const post = new Post({
+    // mongoose create the id and timestamps for us
+    title,
+    content,
+    imageUrl: 'images/bootstrap.jpg',
+    creator: {
+      name: 'omid'
     }
   });
+
+  // save to database
+  post
+    .save()
+    .then(result => {
+      res.status(201).json({
+        message: 'Post created successfully',
+        // post object is result object that we get back here
+        post: result
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
 };

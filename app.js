@@ -35,9 +35,9 @@ mongoose
   .connect(
     'mongodb+srv://omidsoleimani:Registered1366@cluster0.4eqhs.mongodb.net/NodeJs-Api?retryWrites=true&w=majority'
   )
-  .then((result) => {
+  .then(result => {
     app.listen(port);
   })
-  .catch((err) => {
+  .catch(err => {
     console.log(err);
   });
