@@ -6,23 +6,21 @@ const Post = require('../models/post');
 
 // send all posts
 exports.getPosts = (req, res, next) => {
-  // return a json response
-  // json is provided by express to return json data
-  // passing normal object to the json and it convert it automatically
-  res.status(200).json({
-    posts: [
-      {
-        _id: '1',
-        title: 'First Post',
-        content: 'This is the first post content',
-        imageUrl: 'images/bootstrap.jpg',
-        creator: {
-          name: 'omid'
-        },
-        createdAt: new Date()
+  // json is provided by express to return json data, passing normal object to the json and it convert it automatically
+
+  Post.find()
+    .then(posts => {
+      res.status(200).json({
+        message: 'fetched posts successfully',
+        posts
+      });
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
       }
-    ]
-  });
+      next(err);
+    });
 };
 
 // create a post
