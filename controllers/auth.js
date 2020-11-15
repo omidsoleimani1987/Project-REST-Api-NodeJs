@@ -40,7 +40,7 @@ exports.signupUser = (req, res, next) => {
         name,
         password: hashedPassword
       });
-      console.log(user); // ! ...............
+
       // save user in DB
       return user.save();
     })

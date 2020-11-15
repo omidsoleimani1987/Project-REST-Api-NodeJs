@@ -4,6 +4,11 @@ const { body } = require('express-validator');
 
 // *********************************************************************************** //
 
+// importing the authentication token to validate the user before our important routes
+const isAuth = require('../middleware/is-auth');
+
+// *********************************************************************************** //
+
 // controllers
 const feedController = require('../controllers/feed');
 
@@ -15,7 +20,7 @@ const router = express.Router();
 // *********************************************************************************** //
 
 // fetch all posts
-router.get('/posts', feedController.getPosts);
+router.get('/posts', isAuth, feedController.getPosts);
 
 // *********************************************************************************** //
 
