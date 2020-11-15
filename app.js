@@ -8,8 +8,11 @@ const { v4: uuidv4 } = require('uuid');
 
 // routes handlers
 const feedRoutes = require('./routes/feed');
+const authRoutes = require('./routes/auth');
 
 const app = express();
+
+// *********************************************************************************** //
 
 // multer and file upload handling
 const fileStorage = multer.diskStorage({
@@ -35,17 +38,25 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+// *********************************************************************************** //
+
 // middleware -- request body parser
 // app.use(bodyParser.urlencoded()); --> for data type: x-www-form-urlencoded
 app.use(bodyParser.json()); // for data type: application/json
+
+// *********************************************************************************** //
 
 // adding the multer middleware
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
 );
 
+// *********************************************************************************** //
+
 // serving the images statically
 app.use('/images', express.static(path.join(__dirname, 'images')));
+
+// *********************************************************************************** //
 
 // middleware -- headers
 app.use((req, res, next) => {
@@ -59,20 +70,29 @@ app.use((req, res, next) => {
   next();
 });
 
+// *********************************************************************************** //
+
 // middleware -- routes
-// * forward any incoming requests that starts with ( /feed ) to the ( feeRoutes ) to handle them
-app.use('/feed', feedRoutes);
+app.use('/feed', feedRoutes); // * forward any incoming requests that starts with ( /feed ) to the ( feedRoutes ) to handle them
+app.use('/auth', authRoutes); // * forward any incoming requests that starts with ( /auth ) to the ( authRoutes ) to handle them
+
+// *********************************************************************************** //
 
 // error handling middleware
 app.use((error, req, res, next) => {
   console.log(error);
   const status = error.statusCode || 500;
   const message = error.message;
-  res.status(status).json({ message });
+  const data = error.data;
+  res.status(status).json({ message, data });
 });
+
+// *********************************************************************************** //
 
 // port
 const port = process.env.PORT || 8080;
+
+// *********************************************************************************** //
 
 // connecting to DB
 mongoose
@@ -85,3 +105,5 @@ mongoose
   .catch(err => {
     console.log(err);
   });
+
+// *********************************************************************************** //
