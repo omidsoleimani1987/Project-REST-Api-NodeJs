@@ -8,7 +8,9 @@ const { validationResult } = require('express-validator');
 // import Post model
 const Post = require('../models/post');
 
-// send all posts
+// *********************************************************************************** //
+
+// fetch all posts
 exports.getPosts = (req, res, next) => {
   // json is provided by express to return json data, passing normal object to the json and it convert it automatically
 
@@ -26,6 +28,8 @@ exports.getPosts = (req, res, next) => {
       next(err);
     });
 };
+
+// *********************************************************************************** //
 
 // create a post
 exports.createPost = (req, res, next) => {
@@ -108,6 +112,8 @@ exports.getSinglePost = (req, res, next) => {
     });
 };
 
+// *********************************************************************************** //
+
 // TODO) helper function to delete image from local folder
 const clearImage = filePath => {
   filePath = path.join(__dirname, '..', filePath);
@@ -115,6 +121,8 @@ const clearImage = filePath => {
     console.log(err);
   });
 };
+
+// *********************************************************************************** //
 
 // update and edit a single post
 exports.updatePost = (req, res, next) => {
@@ -172,6 +180,41 @@ exports.updatePost = (req, res, next) => {
       res.status(200).json({
         message: 'Post updated!',
         post: result
+      });
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+// *********************************************************************************** //
+
+// delete single post
+exports.deletePost = (req, res, next) => {
+  const postId = req.params.postId;
+
+  // we could use Post.findByIdAndRemove(), but we want to check if the current user is the creator of the post
+  Post.findById(postId)
+    .then(post => {
+      // if we did not find the post
+      if (!post) {
+        const message = 'Could not find post.';
+        const error = new Error(message);
+        error.statusCode = 404;
+        throw error;
+      }
+
+      //TODO) check logged in user
+      clearImage(post.imageUrl);
+      return Post.findByIdAndRemove(postId);
+    })
+    .then(result => {
+      // when the post deleted
+      res.status(200).json({
+        message: 'Post deleted!'
       });
     })
     .catch(err => {
