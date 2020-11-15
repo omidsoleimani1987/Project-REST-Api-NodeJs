@@ -1,6 +1,9 @@
 // validator
 const { validationResult } = require('express-validator');
 
+// password encrypt
+const bcrypt = require('bcryptjs');
+
 // import User model
 const User = require('../models/user');
 
@@ -23,4 +26,32 @@ exports.signupUser = (req, res, next) => {
   const name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
+
+  // encrypt password
+  bcrypt
+    .hash(password, 12)
+    .then(hashedPassword => {
+      // create new user based on User model
+      const user = new User({
+        email,
+        name,
+        password: hashedPassword
+      });
+
+      // save user in DB
+      return user.save();
+    })
+    .then(result => {
+      res.status(201).json({
+        message: 'User created successfully',
+        // post object is result object that we get back here
+        userId: result._id
+      });
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
 };
