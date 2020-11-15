@@ -8,6 +8,9 @@ const { validationResult } = require('express-validator');
 // import Post model
 const Post = require('../models/post');
 
+// import User model
+const User = require('../models/user');
+
 // *********************************************************************************** //
 
 // fetch all posts
@@ -80,25 +83,47 @@ exports.createPost = (req, res, next) => {
   const content = req.body.content;
   const imageUrl = req.file.path.replace('\\', '/');
 
+  // creator variable to pass later as extra information to frontend
+  let creator;
+
+  // TODO) we have user Id because in is-auth.js we stored our user Id in each request object
+  // TODO) req.userId is a string but mongoose convert it objectId
+
   // create a post with Post model as a constructor
   const post = new Post({
     // mongoose create the id and timestamps for us
     title,
     content,
     imageUrl,
-    creator: {
-      name: 'Omid'
-    }
+    creator: req.userId
   });
 
   // save to database
   post
     .save()
     .then(result => {
+      // first we should find which user created this post
+      return User.findById(req.userId);
+    })
+    .then(user => {
+      // first we store the found user to creator variable to pass it in the nex then block to frontend
+      creator = user;
+
+      // after finding the user, adding the post to the list of posts for given user
+      // TODO) we pass the all post object but mongoose takes just the userId and add it to the posts array
+      user.posts.push(post);
+      return user.save();
+    })
+    .then(result => {
       res.status(201).json({
         message: 'Post created successfully',
         // post object is result object that we get back here
-        post: result
+        post,
+        // ! passing extra info about creator to frontend
+        creator: {
+          _id: creator._id,
+          name: creator.name
+        }
       });
     })
     .catch(err => {
