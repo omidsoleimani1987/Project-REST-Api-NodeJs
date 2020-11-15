@@ -33,7 +33,11 @@ exports.getPosts = async (req, res, next) => {
     // calculate how many item to skip when we read and fetch from DB according the page we are in (in frontend)
     const skipItems = (currentPage - 1) * perPage;
 
-    const posts = await Post.find().skip(skipItems).limit(perPage);
+    const posts = await Post.find()
+      .populate('creator')
+      .sort({ createdAt: -1 })
+      .skip(skipItems)
+      .limit(perPage);
 
     res.status(200).json({
       message: 'fetched posts successfully',
