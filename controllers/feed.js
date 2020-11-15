@@ -273,12 +273,20 @@ exports.deletePost = (req, res, next) => {
         throw error;
       }
 
-      //TODO) check logged in user
       clearImage(post.imageUrl);
       return Post.findByIdAndRemove(postId);
     })
     .then(result => {
-      // when the post deleted
+      // we have to delete the post from user model too, because of relations between post and the creator user
+      // first we have to find the user
+      return User.findById(req.userId);
+    })
+    .then(user => {
+      // pull() method comes from mongoose
+      user.posts.pull(postId);
+      return user.save();
+    })
+    .then(result => {
       res.status(200).json({
         message: 'Post deleted!'
       });
