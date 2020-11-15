@@ -28,6 +28,7 @@ router.get('/posts', isAuth, feedController.getPosts);
 // adding middleware array for validation
 router.post(
   '/post',
+  isAuth,
   [
     body('title').trim().isLength({ min: 5 }),
     body('content').trim().isLength({ min: 5 })
@@ -38,13 +39,14 @@ router.post(
 // *********************************************************************************** //
 
 // fetching a single post
-router.get('/post/:postId', feedController.getSinglePost);
+router.get('/post/:postId', isAuth, feedController.getSinglePost);
 
 // *********************************************************************************** //
 
 // updating the posts + adding validation to new values (we can have body for PUT too)
 router.put(
   '/post/:postId',
+  isAuth,
   [
     body('title').trim().isLength({ min: 5 }),
     body('content').trim().isLength({ min: 5 })
@@ -55,7 +57,7 @@ router.put(
 // *********************************************************************************** //
 
 // delete single post (we can NOT have body for DELETE)
-router.delete('/post/:postId', feedController.deletePost);
+router.delete('/post/:postId', isAuth, feedController.deletePost);
 
 // *********************************************************************************** //
 
