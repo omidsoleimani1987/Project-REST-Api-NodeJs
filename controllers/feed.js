@@ -14,7 +14,7 @@ const User = require('../models/user');
 // *********************************************************************************** //
 
 // fetch all posts
-exports.getPosts = (req, res, next) => {
+exports.getPosts = async (req, res, next) => {
   // json is provided by express to return json data, passing normal object to the json and it convert it automatically
 
   // * fetching data with pagination logic
@@ -25,34 +25,27 @@ exports.getPosts = (req, res, next) => {
   // per page value is hard coded in frontend and backend
   const perPage = 2;
 
-  // to determine how many items we have in database
-  let totalItems;
+  try {
+    // to determine how many items we have in database
+    // this promise just COUNT the documents not retrieve them
+    const totalItems = await Post.find().countDocuments();
 
-  /// this promise just COUNT the documents not retrieve them
-  Post.find()
-    .countDocuments()
-    .then(count => {
-      totalItems = count;
+    // calculate how many item to skip when we read and fetch from DB according the page we are in (in frontend)
+    const skipItems = (currentPage - 1) * perPage;
 
-      // calculate how many item to skip when we read and fetch from DB according the page we are in (in frontend)
-      const skipItems = (currentPage - 1) * perPage;
+    const posts = await Post.find().skip(skipItems).limit(perPage);
 
-      return Post.find().skip(skipItems).limit(perPage);
-    })
-    .then(posts => {
-      res.status(200).json({
-        message: 'fetched posts successfully',
-        posts,
-        totalItems
-      });
-    })
-    .catch(err => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
+    res.status(200).json({
+      message: 'fetched posts successfully',
+      posts,
+      totalItems
     });
-  //................................
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
 
 // *********************************************************************************** //
