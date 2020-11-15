@@ -214,6 +214,14 @@ exports.updatePost = (req, res, next) => {
         throw error;
       }
 
+      // check if the user is the creator of the post
+      if (post.creator.toString() !== req.userId) {
+        const message = 'Not authorized to delete and update others posts!';
+        const error = new Error(message);
+        error.statusCode = 403; // not authorized
+        throw error;
+      }
+
       // check if the user uploaded a new file for image to delete the old one
       if (imageUrl !== post.imageUrl) {
         clearImage(post.imageUrl);
@@ -254,6 +262,14 @@ exports.deletePost = (req, res, next) => {
         const message = 'Could not find post.';
         const error = new Error(message);
         error.statusCode = 404;
+        throw error;
+      }
+
+      // check if the user is the creator of the post
+      if (post.creator.toString() !== req.userId) {
+        const message = 'Not authorized to delete and update others posts!';
+        const error = new Error(message);
+        error.statusCode = 403; // not authorized
         throw error;
       }
 
