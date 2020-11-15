@@ -14,11 +14,33 @@ const Post = require('../models/post');
 exports.getPosts = (req, res, next) => {
   // json is provided by express to return json data, passing normal object to the json and it convert it automatically
 
+  // * fetching data with pagination logic
+
+  // page query parameter comes from frontend
+  const currentPage = req.query.page || 1;
+
+  // per page value is hard coded in frontend and backend
+  const perPage = 2;
+
+  // to determine how many items we have in database
+  let totalItems;
+
+  /// this promise just COUNT the documents not retrieve them
   Post.find()
+    .countDocuments()
+    .then(count => {
+      totalItems = count;
+
+      // calculate how many item to skip when we read and fetch from DB according the page we are in (in frontend)
+      const skipItems = (currentPage - 1) * perPage;
+
+      return Post.find().skip(skipItems).limit(perPage);
+    })
     .then(posts => {
       res.status(200).json({
         message: 'fetched posts successfully',
-        posts
+        posts,
+        totalItems
       });
     })
     .catch(err => {
@@ -27,6 +49,7 @@ exports.getPosts = (req, res, next) => {
       }
       next(err);
     });
+  //................................
 };
 
 // *********************************************************************************** //
