@@ -55,3 +55,44 @@ exports.signupUser = (req, res, next) => {
       next(err);
     });
 };
+
+// *********************************************************************************** //
+
+// user Login
+exports.loginUser = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  let loadedUser; // user which is found ion db
+
+  // first check if this email address exists
+  User.findOne({ email: email })
+    .then(user => {
+      if (!user) {
+        const message = 'A user with this email could not be found!';
+        const error = new Error(message);
+        error.statusCode = 401; // not authenticated
+        throw error;
+      }
+
+      // if we have this email address, now we validate the email address
+      loadedUser = user;
+      return bcrypt.compare(password, user.password);
+    })
+    .then(isEqual => {
+      // if the given password by user is not equal to password in DB
+      if (!isEqual) {
+        const message = 'Entered password does not match!';
+        const error = new Error(message);
+        error.statusCode = 401; // not authenticated
+        throw error;
+      }
+
+      // if password matches - we generate JWT (json web token)
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
