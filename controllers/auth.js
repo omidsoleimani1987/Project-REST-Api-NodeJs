@@ -4,6 +4,9 @@ const { validationResult } = require('express-validator');
 // password encrypt
 const bcrypt = require('bcryptjs');
 
+// json web token generator
+const jwt = require('jsonwebtoken');
+
 // import User model
 const User = require('../models/user');
 
@@ -37,7 +40,7 @@ exports.signupUser = (req, res, next) => {
         name,
         password: hashedPassword
       });
-
+      console.log(user); // ! ...............
       // save user in DB
       return user.save();
     })
@@ -87,7 +90,19 @@ exports.loginUser = (req, res, next) => {
         throw error;
       }
 
-      // if password matches - we generate JWT (json web token)
+      //TODO) if password matches - we generate JWT (json web token)
+      // sign() create a new signature and packs to new json token
+      const token = jwt.sign(
+        {
+          email: loadedUser.email,
+          userId: loadedUser._id.toString()
+        },
+        'somesupersecretprivatekey',
+        { expiresIn: '1h' }
+      );
+
+      // then we return the token to client
+      res.status(200).json({ token, userId: loadedUser._id.toString() });
     })
     .catch(err => {
       if (!err.statusCode) {
@@ -96,3 +111,7 @@ exports.loginUser = (req, res, next) => {
       next(err);
     });
 };
+
+// *********************************************************************************** //
+
+// *********************************************************************************** //
