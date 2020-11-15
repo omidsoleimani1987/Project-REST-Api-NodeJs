@@ -1,3 +1,7 @@
+// file system package for helper function to delete the old image from folder for deleted or update post
+const fs = require('fs');
+const path = require('path');
+
 // validator
 const { validationResult } = require('express-validator');
 
@@ -104,6 +108,14 @@ exports.getSinglePost = (req, res, next) => {
     });
 };
 
+// TODO) helper function to delete image from local folder
+const clearImage = filePath => {
+  filePath = path.join(__dirname, '..', filePath);
+  fs.unlink(filePath, err => {
+    console.log(err);
+  });
+};
+
 // update and edit a single post
 exports.updatePost = (req, res, next) => {
   const postId = req.params.postId;
@@ -142,6 +154,11 @@ exports.updatePost = (req, res, next) => {
         const error = new Error(message);
         error.statusCode = 404;
         throw error;
+      }
+
+      // check if the user uploaded a new file for image to delete the old one
+      if (imageUrl !== post.imageUrl) {
+        clearImage(post.imageUrl);
       }
 
       post.title = title;
